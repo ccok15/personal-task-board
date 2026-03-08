@@ -30,27 +30,27 @@ export const taskStatusMeta: Record<
   PENDING: {
     label: "待处理",
     description: "已进入系统，等待排期",
-    className: "border-cyan-400/40 bg-cyan-400/10 text-cyan-100",
+    className: "status-badge--pending",
   },
   IN_PROGRESS: {
     label: "进行中",
     description: "当前正在处理",
-    className: "border-emerald-400/40 bg-emerald-400/10 text-emerald-100",
+    className: "status-badge--in-progress",
   },
   BLOCKED: {
     label: "阻塞",
     description: "存在依赖或问题待解决",
-    className: "border-rose-500/40 bg-rose-500/10 text-rose-100",
+    className: "status-badge--blocked",
   },
   DONE: {
     label: "已完成",
     description: "已交付或已处理完成",
-    className: "border-blue-400/40 bg-blue-400/10 text-blue-100",
+    className: "status-badge--done",
   },
   PAUSED: {
     label: "搁置",
     description: "暂缓处理，后续再跟进",
-    className: "border-zinc-400/40 bg-zinc-500/10 text-zinc-200",
+    className: "status-badge--paused",
   },
 };
 
@@ -60,19 +60,19 @@ export const taskPriorityMeta: Record<
 > = {
   URGENT: {
     label: "紧急",
-    className: "border-rose-500/40 bg-rose-500/10 text-rose-100",
+    className: "priority-badge--urgent",
   },
   HIGH: {
     label: "高",
-    className: "border-orange-400/40 bg-orange-400/10 text-orange-100",
+    className: "priority-badge--high",
   },
   MEDIUM: {
     label: "中",
-    className: "border-cyan-400/40 bg-cyan-400/10 text-cyan-100",
+    className: "priority-badge--medium",
   },
   LOW: {
     label: "低",
-    className: "border-emerald-400/40 bg-emerald-400/10 text-emerald-100",
+    className: "priority-badge--low",
   },
 };
 

@@ -33,10 +33,10 @@ export default async function LoginPage({
     <PublicShell>
       <section className="mx-auto grid w-full max-w-4xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="tech-panel rounded-[28px] p-7">
-          <div className="mb-6 flex size-14 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-100">
+          <div className="icon-chip mb-6 flex size-14 items-center justify-center rounded-2xl">
             <ShieldCheck className="size-6" />
           </div>
-          <h1 className="text-3xl font-semibold text-white">进入后台控制台</h1>
+          <h1 className="text-heading text-3xl font-semibold">进入后台控制台</h1>
           <p className="mt-4 text-sm/7 text-[var(--muted)]">
             后台用于维护任务状态、补充管理员备注，以及控制哪些任务对外公开。
           </p>

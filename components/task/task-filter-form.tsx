@@ -35,11 +35,9 @@ export function TaskFilterForm({
       <div className="grid gap-4 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
         {showStatus ? (
           <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200/70">
-              状态筛选
-            </label>
+            <label className="kicker">状态筛选</label>
             <select
-              className="h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 outline-none focus:border-cyan-300/40"
+              className="input-surface h-11 w-full rounded-md px-3 text-sm outline-none"
               defaultValue={status}
               name="status"
             >
@@ -54,11 +52,9 @@ export function TaskFilterForm({
         ) : null}
         {showPriority ? (
           <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200/70">
-              优先级
-            </label>
+            <label className="kicker">优先级</label>
             <select
-              className="h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 outline-none focus:border-cyan-300/40"
+              className="input-surface h-11 w-full rounded-md px-3 text-sm outline-none"
               defaultValue={priority}
               name="priority"
             >
@@ -73,11 +69,9 @@ export function TaskFilterForm({
         ) : null}
         {showQuery ? (
           <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200/70">
-              {queryLabel}
-            </label>
+            <label className="kicker">{queryLabel}</label>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-3.5 size-4 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-3.5 size-4 text-[var(--surface-placeholder)]" />
               <Input className="pl-9" defaultValue={query} name="q" placeholder={queryPlaceholder} />
             </div>
           </div>

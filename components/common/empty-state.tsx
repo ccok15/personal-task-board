@@ -12,7 +12,7 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
   return (
     <Card>
       <CardContent className="space-y-4 p-8 text-center">
-        <p className="text-lg font-semibold text-slate-50">{title}</p>
+        <p className="text-heading text-lg font-semibold">{title}</p>
         <p className="mx-auto max-w-xl text-sm/7 text-[var(--muted)]">{description}</p>
         {action}
       </CardContent>

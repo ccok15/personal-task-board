@@ -41,7 +41,7 @@ export function TaskForm({ action, task, submitLabel }: TaskFormProps) {
           <select
             id="priority"
             name="priority"
-            className="h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 outline-none focus:border-cyan-300/40"
+            className="input-surface h-11 w-full rounded-md px-3 text-sm outline-none"
             defaultValue={task?.priority ?? "MEDIUM"}
           >
             <option value="URGENT">紧急</option>
@@ -56,7 +56,7 @@ export function TaskForm({ action, task, submitLabel }: TaskFormProps) {
           <select
             id="status"
             name="status"
-            className="h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 outline-none focus:border-cyan-300/40"
+            className="input-surface h-11 w-full rounded-md px-3 text-sm outline-none"
             defaultValue={task?.status ?? "PENDING"}
           >
             <option value="PENDING">待处理</option>
@@ -89,7 +89,7 @@ export function TaskForm({ action, task, submitLabel }: TaskFormProps) {
         </div>
       </div>
 
-      <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/4 px-4 py-3 text-sm text-slate-200">
+      <label className="input-surface flex items-center gap-3 rounded-xl px-4 py-3 text-sm">
         <input
           className="size-4 accent-cyan-300"
           defaultChecked={task?.isPublic ?? true}

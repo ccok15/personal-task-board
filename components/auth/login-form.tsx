@@ -62,7 +62,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
         />
       </div>
       {error ? (
-        <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+        <div className="notice-error rounded-xl border px-4 py-3 text-sm">
           <div className="flex items-center gap-2">
             <AlertCircle className="size-4" />
             <span>{error}</span>

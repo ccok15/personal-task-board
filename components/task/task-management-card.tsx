@@ -31,13 +31,13 @@ export function TaskManagementCard({
         </div>
 
         <div className="space-y-2">
-          <h3 className="break-words text-lg font-semibold text-white">{task.title}</h3>
+          <h3 className="text-heading break-words text-lg font-semibold">{task.title}</h3>
           <p className="text-sm/6 text-[var(--muted)]">
             {task.description || "未补充详细说明。"}
           </p>
         </div>
 
-        <div className="grid gap-3 text-sm text-slate-200">
+        <div className="grid gap-3 text-sm text-[var(--foreground)]">
           <div className="grid grid-cols-[1rem_5rem_1fr] items-start gap-2">
             <UserRound className="mt-0.5 size-4 text-[var(--muted)]" />
             <span className="text-[var(--muted)]">提交人名称</span>
@@ -56,16 +56,16 @@ export function TaskManagementCard({
         </div>
 
         {showAdminNote && task.adminNote ? (
-          <div className="rounded-xl border border-fuchsia-400/20 bg-fuchsia-500/8 p-3">
-            <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-fuchsia-100">
+          <div className="admin-note-panel rounded-xl p-3">
+            <div className="admin-note-title mb-2 flex items-center gap-2 text-sm font-semibold">
               <FileText className="size-4" />
               管理员备注
             </div>
-            <p className="text-sm/6 text-fuchsia-50/90">{task.adminNote}</p>
+            <p className="admin-note-body text-sm/6">{task.adminNote}</p>
           </div>
         ) : null}
 
-        {footer ? <div className="border-t border-white/8 pt-4">{footer}</div> : null}
+        {footer ? <div className="border-t border-[var(--table-row-border)] pt-4">{footer}</div> : null}
       </div>
     </article>
   );

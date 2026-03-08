@@ -24,6 +24,7 @@
 .DS_Store
 *.pem
 home-localhost-3000.png
+.playwright-cli/
 
 # debug
 npm-debug.log*

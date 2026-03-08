@@ -14,15 +14,11 @@ export function StatCard({ label, value, hint, icon }: StatCardProps) {
     <Card className="scan-line">
       <CardContent className="flex items-start justify-between gap-4 p-5">
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200/70">
-            {label}
-          </p>
-          <p className="text-3xl font-semibold text-white">{value}</p>
+          <p className="kicker">{label}</p>
+          <p className="text-heading text-3xl font-semibold">{value}</p>
           <p className="text-sm text-[var(--muted)]">{hint}</p>
         </div>
-        <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3 text-cyan-100">
-          {icon}
-        </div>
+        <div className="icon-chip rounded-2xl p-3">{icon}</div>
       </CardContent>
     </Card>
   );

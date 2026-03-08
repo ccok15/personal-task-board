@@ -40,7 +40,7 @@ export function HomeTaskForm({ isAdmin }: HomeTaskFormProps) {
           <select
             id="priority"
             name="priority"
-            className="h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 outline-none focus:border-cyan-300/40"
+            className="input-surface h-11 w-full rounded-md px-3 text-sm outline-none"
             defaultValue=""
           >
             <option value="">默认中优先级</option>
@@ -57,7 +57,7 @@ export function HomeTaskForm({ isAdmin }: HomeTaskFormProps) {
       </div>
 
       {isAdmin ? (
-        <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/4 px-4 py-3 text-sm text-slate-200">
+        <label className="input-surface flex items-center gap-3 rounded-xl px-4 py-3 text-sm">
           <input className="size-4 accent-cyan-300" defaultChecked name="isPublic" type="checkbox" />
           作为公开任务展示（关闭后仅管理员可见）
         </label>

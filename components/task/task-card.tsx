@@ -21,11 +21,11 @@ export function TaskCard({ task, showAdminNote = false }: TaskCardProps) {
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-white">{task.title}</h3>
+          <h3 className="text-heading text-lg font-semibold">{task.title}</h3>
           {task.description ? (
             <p className="text-sm/7 text-[var(--muted)]">{task.description}</p>
           ) : (
-            <p className="text-sm text-slate-400">未补充详细说明。</p>
+            <p className="text-sm text-[var(--muted)]">未补充详细说明。</p>
           )}
         </div>
 
@@ -45,12 +45,12 @@ export function TaskCard({ task, showAdminNote = false }: TaskCardProps) {
         </div>
 
         {showAdminNote && task.adminNote ? (
-          <div className="rounded-xl border border-fuchsia-400/20 bg-fuchsia-500/8 p-4">
-            <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-fuchsia-100">
+          <div className="admin-note-panel rounded-xl p-4">
+            <div className="admin-note-title mb-2 flex items-center gap-2 text-sm font-semibold">
               <FileText className="size-4" />
               管理员备注
             </div>
-            <p className="text-sm/7 text-fuchsia-50/90">{task.adminNote}</p>
+            <p className="admin-note-body text-sm/7">{task.adminNote}</p>
           </div>
         ) : null}
       </CardContent>

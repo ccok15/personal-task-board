@@ -35,7 +35,7 @@ export function TaskListItem({
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-white md:text-xl">{task.title}</h2>
+            <h2 className="text-heading text-lg font-semibold md:text-xl">{task.title}</h2>
             <p className="text-sm/7 text-[var(--muted)]">
               {task.description || "未补充详细说明。"}
             </p>

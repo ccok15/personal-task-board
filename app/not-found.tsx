@@ -8,7 +8,7 @@ export default function NotFound() {
     <PublicShell>
       <section className="tech-panel rounded-[28px] p-10 text-center">
         <p className="kicker">404</p>
-        <h1 className="mt-4 text-3xl font-semibold text-white">页面不存在</h1>
+        <h1 className="text-heading mt-4 text-3xl font-semibold">页面不存在</h1>
         <p className="mt-4 text-sm/7 text-[var(--muted)]">
           目标页面可能还没建立，或者已经被移除。
         </p>

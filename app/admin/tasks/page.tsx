@@ -114,7 +114,7 @@ export default async function AdminTasksPage({
           <TableBody>
             {tasks.map((task) => (
               <TableRow key={task.id}>
-                <TableCell className="font-medium text-white">{task.title}</TableCell>
+                <TableCell className="text-heading font-medium">{task.title}</TableCell>
                 <TableCell>{task.submitterName || "未署名"}</TableCell>
                 <TableCell>
                   <TaskStatusBadge status={task.status} />

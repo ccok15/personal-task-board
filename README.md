@@ -137,6 +137,7 @@ pnpm prisma:migrate:deploy
 
 - `/Users/lsl/new_gpt/web_lsl/Dockerfile:1`
 - `/Users/lsl/new_gpt/web_lsl/docker-compose.prod.yml:1`
+- `/Users/lsl/new_gpt/web_lsl/docker-compose.ecs.yml:1`
 - `/Users/lsl/new_gpt/web_lsl/Caddyfile:1`
 - `/Users/lsl/new_gpt/web_lsl/.env.production.example:1`
 - `/Users/lsl/new_gpt/web_lsl/scripts/deploy-prod.sh:1`
@@ -186,6 +187,22 @@ bash scripts/rollback-prod.sh <git-ref-or-tag>
 - 每次部署都会执行 `prisma migrate deploy`
 - 每次部署都会执行 `prisma:seed`，用于确保管理员账号存在
 - 生产环境默认 `SEED_SAMPLE_DATA="false"`，不会写入示例任务
+
+## ECS 先用 IP 发布
+
+如果服务器上已经有其他反向代理占用了 `80/443`，可以先不启动 `proxy`，直接暴露应用到 `3000` 端口：
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.ecs.yml up -d db app
+```
+
+此时访问地址为：
+
+```bash
+http://服务器公网IP:3000
+```
+
+等域名审核完成后，再切回完整的 `db + app + proxy` 模式，或者把已有的 Nginx Proxy Manager 指向 `3000` 端口。
 
 ## 需求基线
 - 现行需求说明见 `/Users/lsl/new_gpt/web_lsl/PRD_v1.md:1`

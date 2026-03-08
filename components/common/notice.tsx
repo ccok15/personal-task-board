@@ -15,9 +15,9 @@ const icons = {
 };
 
 const styles = {
-  success: "border-emerald-400/30 bg-emerald-500/10 text-emerald-100",
-  error: "border-rose-400/30 bg-rose-500/10 text-rose-100",
-  info: "border-cyan-400/30 bg-cyan-500/10 text-cyan-100",
+  success: "notice-success",
+  error: "notice-error",
+  info: "notice-info",
 };
 
 export function Notice({ title, description, variant = "info" }: NoticeProps) {
