@@ -8,6 +8,9 @@ async function main() {
   const adminUsername = process.env.ADMIN_USERNAME ?? "admin";
   const adminEmail = process.env.ADMIN_EMAIL ?? "admin@example.com";
   const adminPassword = process.env.ADMIN_PASSWORD ?? "ChangeMe123!";
+  const shouldSeedSampleData =
+    process.env.SEED_SAMPLE_DATA === "true" ||
+    (process.env.SEED_SAMPLE_DATA == null && process.env.NODE_ENV !== "production");
   const passwordHash = await hash(adminPassword, 12);
 
   await prisma.user.upsert({
@@ -26,7 +29,7 @@ async function main() {
   });
 
   const existingTaskCount = await prisma.task.count();
-  if (existingTaskCount === 0) {
+  if (shouldSeedSampleData && existingTaskCount === 0) {
     await prisma.task.createMany({
       data: [
         {
@@ -48,6 +51,7 @@ async function main() {
         {
           title: "整理本周测试结论与风险点",
           description: "同步给产品和产线，形成下一轮样品建议。",
+          submitterName: "测试负责人",
           priority: "MEDIUM",
           status: "PENDING",
           isPublic: true,
@@ -55,6 +59,7 @@ async function main() {
         {
           title: "补充历史异常复盘记录",
           description: "已经归档到知识库，留作后续追溯。",
+          submitterName: "质量负责人",
           priority: "LOW",
           status: "DONE",
           isPublic: true,

@@ -6,12 +6,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "eslint",
+    "deploy:prod": "bash scripts/deploy-prod.sh",
     "db:prepare-task-first": "tsx scripts/migrate-task-first.ts",
     "prisma:generate": "prisma generate",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:status": "prisma migrate status",
     "prisma:push": "prisma db push",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "rollback:prod": "bash scripts/rollback-prod.sh"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.2",
