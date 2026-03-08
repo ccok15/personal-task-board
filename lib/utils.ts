@@ -1,6 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+const APP_LOCALE = "zh-CN";
+const APP_TIME_ZONE = "Asia/Shanghai";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -10,8 +13,9 @@ export function formatDate(date: Date | null | undefined) {
     return "未设置";
   }
 
-  return new Intl.DateTimeFormat("zh-CN", {
+  return new Intl.DateTimeFormat(APP_LOCALE, {
     dateStyle: "medium",
+    timeZone: APP_TIME_ZONE,
   }).format(date);
 }
 
@@ -20,9 +24,10 @@ export function formatDateTime(date: Date | null | undefined) {
     return "未设置";
   }
 
-  return new Intl.DateTimeFormat("zh-CN", {
+  return new Intl.DateTimeFormat(APP_LOCALE, {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: APP_TIME_ZONE,
   }).format(date);
 }
 
