@@ -106,11 +106,18 @@ function sortAdminTasks<T extends { status: TaskStatusValue; priority: TaskPrior
   });
 }
 
-export async function getVisibleOpenTasks(includePrivate: boolean) {
+export async function getVisibleOpenTasks({
+  includePrivate,
+  status,
+}: {
+  includePrivate: boolean;
+  status?: TaskStatusValue | "ALL";
+}) {
   const tasks = await prisma.task.findMany({
     where: buildTaskWhere({
       includePrivate,
-      openOnly: true,
+      openOnly: status === "ALL" || !status,
+      status,
     }),
   });
 

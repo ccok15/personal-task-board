@@ -11,6 +11,7 @@ import { TaskStatusActions } from "@/components/task/task-status-actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { auth, isAdminSession } from "@/lib/auth";
+import { OPEN_TASK_STATUS_ORDER, taskStatusMeta, type TaskStatusValue } from "@/lib/constants";
 import { getVisibleOpenTasks } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,51 @@ function firstValue(value: SearchParamValue) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function getStatusFilter(value: SearchParamValue): TaskStatusValue | "ALL" {
+  const status = firstValue(value);
+
+  if (!status || status === "ALL") {
+    return "ALL";
+  }
+
+  return OPEN_TASK_STATUS_ORDER.includes(status as TaskStatusValue)
+    ? (status as TaskStatusValue)
+    : "ALL";
+}
+
+function buildHomeHref({
+  create,
+  created,
+  error,
+  status,
+}: {
+  create?: string;
+  created?: string;
+  error?: string;
+  status: TaskStatusValue | "ALL";
+}) {
+  const params = new URLSearchParams();
+
+  if (status !== "ALL") {
+    params.set("status", status);
+  }
+
+  if (create) {
+    params.set("create", create);
+  }
+
+  if (created) {
+    params.set("created", created);
+  }
+
+  if (error) {
+    params.set("error", error);
+  }
+
+  const query = params.toString();
+  return query ? `/?${query}` : "/";
+}
+
 export default async function HomePage({
   searchParams,
 }: {
@@ -31,10 +77,14 @@ export default async function HomePage({
   const create = firstValue(params.create);
   const created = firstValue(params.created);
   const error = firstValue(params.error);
+  const statusFilter = getStatusFilter(params.status);
 
   const session = await auth();
   const isAdmin = isAdminSession(session);
-  const tasks = await getVisibleOpenTasks(isAdmin);
+  const tasks = await getVisibleOpenTasks({
+    includePrivate: isAdmin,
+    status: statusFilter,
+  });
 
   return (
     <PublicShell>
@@ -71,6 +121,26 @@ export default async function HomePage({
         </Card>
       ) : null}
 
+      <section className="tech-panel rounded-2xl p-4">
+        <div className="flex flex-wrap gap-2">
+          <Button asChild size="sm" variant={statusFilter === "ALL" ? "default" : "secondary"}>
+            <Link href={buildHomeHref({ create, created, error, status: "ALL" })}>全部</Link>
+          </Button>
+          {OPEN_TASK_STATUS_ORDER.map((status) => (
+            <Button
+              key={status}
+              asChild
+              size="sm"
+              variant={statusFilter === status ? "default" : "secondary"}
+            >
+              <Link href={buildHomeHref({ create, created, error, status })}>
+                {taskStatusMeta[status].label}
+              </Link>
+            </Button>
+          ))}
+        </div>
+      </section>
+
       {tasks.length ? (
         <section className="space-y-4">
           {tasks.map((task) => (
@@ -91,11 +161,17 @@ export default async function HomePage({
         </section>
       ) : (
         <EmptyState
-          title="当前没有未完成任务"
+          title={
+            statusFilter === "ALL"
+              ? "当前没有未完成任务"
+              : `当前没有“${taskStatusMeta[statusFilter].label}”任务`
+          }
           description="可以直接从首页新建一条任务，后续状态也都在这里跟进。"
           action={
             <Button asChild>
-              <Link href="/?create=1">去新建任务</Link>
+              <Link href={buildHomeHref({ create: "1", created, error, status: statusFilter })}>
+                去新建任务
+              </Link>
             </Button>
           }
         />
