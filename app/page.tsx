@@ -18,6 +18,7 @@ export const dynamic = "force-dynamic";
 
 type SearchParamValue = string | string[] | undefined;
 type SearchParams = Promise<Record<string, SearchParamValue>>;
+const HOME_STATUS_FILTER_ORDER: TaskStatusValue[] = ["IN_PROGRESS", "PENDING", "BLOCKED", "PAUSED"];
 
 function firstValue(value: SearchParamValue) {
   return Array.isArray(value) ? value[0] : value;
@@ -126,7 +127,7 @@ export default async function HomePage({
           <Button asChild size="sm" variant={statusFilter === "ALL" ? "default" : "secondary"}>
             <Link href={buildHomeHref({ create, created, error, status: "ALL" })}>全部</Link>
           </Button>
-          {OPEN_TASK_STATUS_ORDER.map((status) => (
+          {HOME_STATUS_FILTER_ORDER.map((status) => (
             <Button
               key={status}
               asChild
