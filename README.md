@@ -138,8 +138,10 @@ pnpm prisma:migrate:deploy
 - `/Users/lsl/new_gpt/web_lsl/Dockerfile:1`
 - `/Users/lsl/new_gpt/web_lsl/docker-compose.prod.yml:1`
 - `/Users/lsl/new_gpt/web_lsl/docker-compose.ecs.yml:1`
+- `/Users/lsl/new_gpt/web_lsl/docker-compose.external-proxy.yml:1`
 - `/Users/lsl/new_gpt/web_lsl/Caddyfile:1`
 - `/Users/lsl/new_gpt/web_lsl/.env.production.example:1`
+- `/Users/lsl/new_gpt/web_lsl/docs/domain-routing.md:1`
 - `/Users/lsl/new_gpt/web_lsl/scripts/deploy-prod.sh:1`
 - `/Users/lsl/new_gpt/web_lsl/scripts/rollback-prod.sh:1`
 
@@ -151,6 +153,9 @@ cp .env.production.example .env.production
 
 然后填写：
 - `APP_DOMAIN`
+- `PROXY_MODE`
+- `APP_BIND_HOST`
+- `APP_PORT`
 - `POSTGRES_DB`
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
@@ -183,10 +188,24 @@ bash scripts/rollback-prod.sh <git-ref-or-tag>
 部署逻辑：
 - `db` 使用 `PostgreSQL 16`
 - `app` 使用项目内 `Dockerfile`
-- `proxy` 使用 `Caddy`
+- `proxy` 在 `PROXY_MODE=standalone` 时使用 `Caddy`
 - 每次部署都会执行 `prisma migrate deploy`
 - 每次部署都会执行 `prisma:seed`，用于确保管理员账号存在
 - 生产环境默认 `SEED_SAMPLE_DATA="false"`，不会写入示例任务
+
+## 单域名多站点接入
+
+推荐结构：
+
+- 个人站：`example.com`
+- 个人站别名：`www.example.com`
+- 工作站：`work.example.com`
+
+当前项目默认按子域名部署，不使用 `example.com/work` 这种路径挂载。
+
+详细接入说明见：
+
+- `/Users/lsl/new_gpt/web_lsl/docs/domain-routing.md:1`
 
 ## ECS 先用 IP 发布
 
@@ -203,6 +222,34 @@ http://服务器公网IP:3000
 ```
 
 等域名审核完成后，再切回完整的 `db + app + proxy` 模式，或者把已有的 Nginx Proxy Manager 指向 `3000` 端口。
+
+## 域名正式接入
+
+如果服务器已有统一反向代理，推荐使用：
+
+```bash
+PROXY_MODE="external"
+APP_DOMAIN="work.example.com"
+NEXTAUTH_URL="https://work.example.com"
+```
+
+然后执行：
+
+```bash
+bash scripts/deploy-prod.sh
+```
+
+此时项目会监听 `127.0.0.1:3000`，由外部反向代理把 `work.example.com` 转发到该端口。
+
+如果服务器没有统一反向代理，改为：
+
+```bash
+PROXY_MODE="standalone"
+APP_DOMAIN="work.example.com"
+NEXTAUTH_URL="https://work.example.com"
+```
+
+此时项目自带 `Caddy`，直接接管 `80/443`。
 
 ## 需求基线
 - 现行需求说明见 `/Users/lsl/new_gpt/web_lsl/PRD_v1.md:1`

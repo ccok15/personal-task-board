@@ -26,6 +26,8 @@ services:
 
   proxy:
     image: caddy:2-alpine
+    profiles:
+      - standalone-proxy
     restart: unless-stopped
     env_file:
       - .env.production
