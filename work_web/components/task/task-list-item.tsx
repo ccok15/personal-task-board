@@ -53,7 +53,7 @@ export function TaskListItem({
           <div className="grid gap-2 text-sm text-[var(--muted)] md:grid-cols-2 xl:grid-cols-3">
             <div className="flex items-center gap-2">
               <CalendarDays className="size-4 shrink-0" />
-              <span>{formatDate(task.dueDate)}</span>
+              <span>期望完成：{formatDate(task.dueDate)}</span>
             </div>
             {showCompletedAt ? (
               <div className="flex items-center gap-2">
@@ -61,10 +61,6 @@ export function TaskListItem({
                 <span>{formatDateTime(task.completedAt)}</span>
               </div>
             ) : null}
-            <div className="flex items-center gap-2">
-              <Clock3 className="size-4 shrink-0" />
-              <span>{formatDateTime(task.updatedAt)}</span>
-            </div>
           </div>
         </>
       }
@@ -76,7 +72,7 @@ export function TaskListItem({
           </div>
           <div className="flex items-center gap-2">
             <Clock3 className="size-4 shrink-0" />
-            <span>{formatDateTime(task.createdAt)}</span>
+            <span>创建时间：{formatDateTime(task.createdAt)}</span>
           </div>
         </>
       }
