@@ -2,6 +2,16 @@
 
 一个面向芯片硬件测试协作场景的任务终端。
 
+## 目录位置
+
+当前仓库的业务项目已经整体移动到：
+
+```bash
+/Users/lsl/new_gpt/web_lsl/work_web
+```
+
+后续本地开发、构建、部署、环境变量配置，都以 `work_web/` 作为项目根目录。
+
 核心能力：
 - 首页集中展示当前任务
 - 首页直接新建任务
@@ -22,6 +32,7 @@
 
 ### 1. 准备环境变量
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 cp .env.example .env
 ```
 
@@ -36,6 +47,7 @@ cp .env.example .env
 如果本机没有现成 PostgreSQL，可直接使用 Docker：
 
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 docker compose up -d
 ```
 
@@ -43,6 +55,7 @@ docker compose up -d
 如果你之前跑过旧版本，先执行：
 
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 pnpm db:prepare-task-first
 pnpm prisma db push --accept-data-loss
 ```
@@ -51,17 +64,20 @@ pnpm prisma db push --accept-data-loss
 
 ### 4. 生成 Prisma Client
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 pnpm prisma:generate
 ```
 
 ### 5. 推送数据库结构并写入初始数据
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 pnpm prisma:push
 pnpm prisma:seed
 ```
 
 ### 6. 启动开发服务器
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 pnpm dev
 ```
 
@@ -104,6 +120,7 @@ git@github.com:ccok15/personal-task-board.git
 日常提交流程：
 
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 git add .
 git commit -m "你的修改说明"
 git push
@@ -121,6 +138,7 @@ git push
 开发环境：
 
 ```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
 pnpm prisma:migrate:dev --name 你的迁移名
 pnpm prisma:generate
 ```
@@ -128,6 +146,7 @@ pnpm prisma:generate
 生产环境：
 
 ```bash
+cd /opt/personal-task-board/work_web
 pnpm prisma:migrate:deploy
 ```
 
@@ -135,24 +154,26 @@ pnpm prisma:migrate:deploy
 
 仓库内已包含：
 
-- `/Users/lsl/new_gpt/web_lsl/Dockerfile:1`
-- `/Users/lsl/new_gpt/web_lsl/docker-compose.prod.yml:1`
-- `/Users/lsl/new_gpt/web_lsl/docker-compose.ecs.yml:1`
-- `/Users/lsl/new_gpt/web_lsl/docker-compose.external-proxy.yml:1`
-- `/Users/lsl/new_gpt/web_lsl/Caddyfile:1`
-- `/Users/lsl/new_gpt/web_lsl/.env.production.example:1`
-- `/Users/lsl/new_gpt/web_lsl/docs/domain-routing.md:1`
-- `/Users/lsl/new_gpt/web_lsl/scripts/deploy-prod.sh:1`
-- `/Users/lsl/new_gpt/web_lsl/scripts/rollback-prod.sh:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/Dockerfile:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docker-compose.prod.yml:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docker-compose.ecs.yml:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docker-compose.external-proxy.yml:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/Caddyfile:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/.env.production.example:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/domain-routing.md:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/scripts/deploy-prod.sh:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/scripts/rollback-prod.sh:1`
 
 首次部署前，服务器上执行：
 
 ```bash
+cd /opt/personal-task-board/work_web
 cp .env.production.example .env.production
 ```
 
 然后填写：
 - `APP_DOMAIN`
+- `COMPOSE_PROJECT_NAME`
 - `COMPOSE_VARIANT`
 - `PROXY_MODE`
 - `APP_BIND_HOST`
@@ -167,15 +188,25 @@ cp .env.production.example .env.production
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD`
 
+项目移动到 `work_web/` 后，生产环境建议固定：
+
+```bash
+COMPOSE_PROJECT_NAME="personal-task-board"
+```
+
+这样目录变化不会导致 Docker Compose 生成一套新的容器名和卷名。
+
 首次上线：
 
 ```bash
+cd /opt/personal-task-board/work_web
 bash scripts/deploy-prod.sh
 ```
 
 后续发布：
 
 ```bash
+cd /opt/personal-task-board/work_web
 git pull --ff-only origin main
 bash scripts/deploy-prod.sh
 ```
@@ -183,6 +214,7 @@ bash scripts/deploy-prod.sh
 回滚到某个 tag 或 commit：
 
 ```bash
+cd /opt/personal-task-board/work_web
 bash scripts/rollback-prod.sh <git-ref-or-tag>
 ```
 
@@ -206,13 +238,15 @@ bash scripts/rollback-prod.sh <git-ref-or-tag>
 
 详细接入说明见：
 
-- `/Users/lsl/new_gpt/web_lsl/docs/domain-routing.md:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/domain-routing.md:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/domain-routing.md:1`
 
 ## ECS 先用 IP 发布
 
 如果服务器上已经有其他反向代理占用了 `80/443`，可以先不启动 `proxy`，直接暴露应用到 `3000` 端口：
 
 ```bash
+cd /opt/personal-task-board/work_web
 COMPOSE_VARIANT="ecs"
 PROXY_MODE="external"
 bash scripts/deploy-prod.sh
@@ -231,6 +265,7 @@ http://服务器公网IP:3000
 如果服务器已有统一反向代理，推荐使用：
 
 ```bash
+cd /opt/personal-task-board/work_web
 COMPOSE_VARIANT="ecs"
 PROXY_MODE="external"
 APP_DOMAIN="work.example.com"
@@ -240,14 +275,16 @@ NEXTAUTH_URL="https://work.example.com"
 然后执行：
 
 ```bash
+cd /opt/personal-task-board/work_web
 bash scripts/deploy-prod.sh
 ```
 
-此时项目会监听 `127.0.0.1:3000`，由外部反向代理把 `work.example.com` 转发到该端口。
+此时项目会监听主机 `3000` 端口，由外部反向代理把 `work.example.com` 转发到该端口。
 
 如果服务器没有统一反向代理，改为：
 
 ```bash
+cd /opt/personal-task-board/work_web
 COMPOSE_VARIANT="ecs"
 PROXY_MODE="standalone"
 APP_DOMAIN="work.example.com"
@@ -257,5 +294,5 @@ NEXTAUTH_URL="https://work.example.com"
 此时项目自带 `Caddy`，直接接管 `80/443`。
 
 ## 需求基线
-- 现行需求说明见 `/Users/lsl/new_gpt/web_lsl/PRD_v1.md:1`
-- 原始参考文档见 `/Users/lsl/new_gpt/web_lsl/个人工作计划与任务发布网站_产品需求文档_V1.docx:1`
+- 现行需求说明见 `/Users/lsl/new_gpt/web_lsl/work_web/PRD_v1.md:1`
+- 原始参考文档见 `/Users/lsl/new_gpt/web_lsl/work_web/个人工作计划与任务发布网站_产品需求文档_V1.docx:1`

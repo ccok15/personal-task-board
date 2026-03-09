@@ -31,8 +31,8 @@
 - `PROXY_MODE=external`
   - 推荐
   - 复用服务器上已有的反向代理
-  - 工作站容器只监听 `127.0.0.1:3000`
-  - 由外部反向代理把 `work.example.com` 转发到 `127.0.0.1:3000`
+  - 工作站容器对外暴露到主机 `3000` 端口
+  - 由外部反向代理把 `work.example.com` 转发到工作站容器
 
 - `PROXY_MODE=standalone`
   - 适合没有现成反向代理的独立服务器
@@ -57,7 +57,9 @@
 
 - Domain Names：`work.example.com`
 - Scheme：`http`
-- Forward Hostname / IP：`127.0.0.1`
+- Forward Hostname / IP：
+  - 如果 `Nginx Proxy Manager` 运行在 Docker 容器里，填 `172.17.0.1`
+  - 如果反向代理直接运行在宿主机上，填 `127.0.0.1`
 - Forward Port：`3000`
 - Websockets Support：开启
 - Block Common Exploits：开启

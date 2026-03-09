@@ -25,6 +25,9 @@ set +a
 : "${POSTGRES_USER:?POSTGRES_USER is required}"
 : "${POSTGRES_DB:?POSTGRES_DB is required}"
 
+COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-personal-task-board}"
+export COMPOSE_PROJECT_NAME
+
 PROXY_MODE="${PROXY_MODE:-standalone}"
 COMPOSE_VARIANT="${COMPOSE_VARIANT:-standard}"
 case "$PROXY_MODE" in
@@ -65,6 +68,7 @@ compose() {
 
 CURRENT_REF="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
 echo "Deploying commit: $CURRENT_REF"
+echo "Compose project: $COMPOSE_PROJECT_NAME"
 echo "Compose variant: $COMPOSE_VARIANT"
 echo "Proxy mode: $PROXY_MODE"
 
