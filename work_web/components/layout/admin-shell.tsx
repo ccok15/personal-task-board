@@ -21,17 +21,17 @@ export async function AdminShell({ username, children }: AdminShellProps) {
   return (
     <div className="min-h-screen">
       <header className="app-header sticky top-0 z-30">
-        <div className="mx-auto grid h-32 w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_auto] items-center gap-x-4 gap-y-3 px-4 py-4 md:h-24 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:grid-rows-1 md:gap-y-0 md:px-6 md:py-0">
-          <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-3">
+        <div className="mx-auto grid min-h-[5.5rem] w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] auto-rows-auto items-center gap-x-3 gap-y-2 px-4 py-3 md:h-24 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:grid-rows-1 md:gap-x-4 md:gap-y-0 md:px-6 md:py-0">
+          <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-2 md:gap-3">
             <div className="icon-chip rounded-2xl p-3">
               <Radar className="size-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-heading text-sm font-semibold">后台控制台</p>
+              <p className="text-heading text-sm font-semibold leading-tight">后台控制台</p>
               <p className="text-xs text-[var(--muted)]">管理员：{username}</p>
             </div>
           </div>
-          <nav className="col-span-2 col-start-1 row-start-2 flex items-center justify-center gap-2 md:col-span-1 md:col-start-2 md:row-start-1 md:justify-self-center">
+          <nav className="col-span-2 col-start-1 row-start-2 flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:col-span-1 md:col-start-2 md:row-start-1 md:justify-self-center md:overflow-visible md:pb-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <NavLink href="/" label="首页" />
             {adminNavigation.map((item) => (
               <NavLink key={item.href} href={item.href} label={item.label} />
@@ -43,7 +43,9 @@ export async function AdminShell({ username, children }: AdminShellProps) {
           </div>
         </div>
       </header>
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 md:px-6">{children}</main>
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 md:px-6 md:py-8">
+        {children}
+      </main>
     </div>
   );
 }
