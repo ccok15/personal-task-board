@@ -5,5 +5,3 @@ services:
     build:
       args:
         NODE_IMAGE: docker.m.daocloud.io/library/node:20-alpine
-    ports:
-      - "3000:3000"

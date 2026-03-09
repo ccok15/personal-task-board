@@ -5,6 +5,7 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ENV_FILE:-$ROOT_DIR/.env.production}"
 COMPOSE_FILE="$ROOT_DIR/docker-compose.prod.yml"
+ECS_COMPOSE_FILE="$ROOT_DIR/docker-compose.ecs.yml"
 EXTERNAL_PROXY_COMPOSE_FILE="$ROOT_DIR/docker-compose.external-proxy.yml"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -25,6 +26,7 @@ set +a
 : "${POSTGRES_DB:?POSTGRES_DB is required}"
 
 PROXY_MODE="${PROXY_MODE:-standalone}"
+COMPOSE_VARIANT="${COMPOSE_VARIANT:-standard}"
 case "$PROXY_MODE" in
   standalone|external)
     ;;
@@ -35,8 +37,22 @@ case "$PROXY_MODE" in
     ;;
 esac
 
+case "$COMPOSE_VARIANT" in
+  standard|ecs)
+    ;;
+  *)
+    echo "Unsupported COMPOSE_VARIANT: $COMPOSE_VARIANT" >&2
+    echo "Expected one of: standard, ecs" >&2
+    exit 1
+    ;;
+esac
+
 COMPOSE_ARGS=(-f "$COMPOSE_FILE")
 UP_SERVICES=(app proxy)
+
+if [[ "$COMPOSE_VARIANT" == "ecs" ]]; then
+  COMPOSE_ARGS+=(-f "$ECS_COMPOSE_FILE")
+fi
 
 if [[ "$PROXY_MODE" == "external" ]]; then
   COMPOSE_ARGS+=(-f "$EXTERNAL_PROXY_COMPOSE_FILE")
@@ -49,6 +65,7 @@ compose() {
 
 CURRENT_REF="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")"
 echo "Deploying commit: $CURRENT_REF"
+echo "Compose variant: $COMPOSE_VARIANT"
 echo "Proxy mode: $PROXY_MODE"
 
 compose build app

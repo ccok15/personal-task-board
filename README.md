@@ -153,6 +153,7 @@ cp .env.production.example .env.production
 
 然后填写：
 - `APP_DOMAIN`
+- `COMPOSE_VARIANT`
 - `PROXY_MODE`
 - `APP_BIND_HOST`
 - `APP_PORT`
@@ -212,7 +213,9 @@ bash scripts/rollback-prod.sh <git-ref-or-tag>
 如果服务器上已经有其他反向代理占用了 `80/443`，可以先不启动 `proxy`，直接暴露应用到 `3000` 端口：
 
 ```bash
-docker compose -f docker-compose.prod.yml -f docker-compose.ecs.yml up -d db app
+COMPOSE_VARIANT="ecs"
+PROXY_MODE="external"
+bash scripts/deploy-prod.sh
 ```
 
 此时访问地址为：
@@ -228,6 +231,7 @@ http://服务器公网IP:3000
 如果服务器已有统一反向代理，推荐使用：
 
 ```bash
+COMPOSE_VARIANT="ecs"
 PROXY_MODE="external"
 APP_DOMAIN="work.example.com"
 NEXTAUTH_URL="https://work.example.com"
@@ -244,6 +248,7 @@ bash scripts/deploy-prod.sh
 如果服务器没有统一反向代理，改为：
 
 ```bash
+COMPOSE_VARIANT="ecs"
 PROXY_MODE="standalone"
 APP_DOMAIN="work.example.com"
 NEXTAUTH_URL="https://work.example.com"
