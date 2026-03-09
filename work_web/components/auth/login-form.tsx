@@ -16,6 +16,17 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  function resolveRedirectUrl(url: string | null | undefined) {
+    const fallback = new URL(callbackUrl, window.location.origin);
+
+    if (!url) {
+      return `${fallback.pathname}${fallback.search}${fallback.hash}`;
+    }
+
+    const resolved = new URL(url, window.location.origin);
+    return `${resolved.pathname}${resolved.search}${resolved.hash}`;
+  }
+
   return (
     <form
       className="space-y-5"
@@ -43,7 +54,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
             return;
           }
 
-          window.location.href = result.url ?? callbackUrl;
+          window.location.href = resolveRedirectUrl(result.url);
         });
       }}
     >
