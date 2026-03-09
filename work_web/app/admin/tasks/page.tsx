@@ -103,6 +103,7 @@ export default async function AdminTasksPage({
             <TableRow>
               <TableHead>任务</TableHead>
               <TableHead>提交人名称</TableHead>
+              <TableHead>创建时间</TableHead>
               <TableHead>状态</TableHead>
               <TableHead>优先级</TableHead>
               <TableHead>可见性</TableHead>
@@ -116,6 +117,7 @@ export default async function AdminTasksPage({
               <TableRow key={task.id}>
                 <TableCell className="text-heading font-medium">{task.title}</TableCell>
                 <TableCell>{task.submitterName || "未署名"}</TableCell>
+                <TableCell>{formatDateTime(task.createdAt)}</TableCell>
                 <TableCell>
                   <TaskStatusBadge status={task.status} />
                 </TableCell>

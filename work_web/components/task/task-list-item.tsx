@@ -47,6 +47,10 @@ export function TaskListItem({
               <span>{task.submitterName || "未署名"}</span>
             </div>
             <div className="flex items-center gap-2">
+              <Clock3 className="size-4" />
+              <span>创建时间：{formatDateTime(task.createdAt)}</span>
+            </div>
+            <div className="flex items-center gap-2">
               <CalendarDays className="size-4" />
               <span>期望完成：{formatDate(task.dueDate)}</span>
             </div>

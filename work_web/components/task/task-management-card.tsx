@@ -44,6 +44,11 @@ export function TaskManagementCard({
             <span>{task.submitterName || "未署名"}</span>
           </div>
           <div className="grid grid-cols-[1rem_5rem_1fr] items-start gap-2">
+            <Clock3 className="mt-0.5 size-4 text-[var(--muted)]" />
+            <span className="text-[var(--muted)]">创建时间</span>
+            <span>{formatDateTime(task.createdAt)}</span>
+          </div>
+          <div className="grid grid-cols-[1rem_5rem_1fr] items-start gap-2">
             <CalendarDays className="mt-0.5 size-4 text-[var(--muted)]" />
             <span className="text-[var(--muted)]">期望时间</span>
             <span>{formatDate(task.dueDate)}</span>
