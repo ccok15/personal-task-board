@@ -7,6 +7,7 @@ import { NavLink } from "@/components/layout/nav-link";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { adminNavigation } from "@/lib/constants";
 import { THEME_COOKIE_NAME, isThemeValue } from "@/lib/theme";
+import { APP_VERSION_LABEL } from "@/lib/version";
 
 type AdminShellProps = {
   username: string;
@@ -27,7 +28,12 @@ export async function AdminShell({ username, children }: AdminShellProps) {
               <Radar className="size-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-heading text-sm font-semibold leading-tight">后台控制台</p>
+              <div className="flex items-center gap-2">
+                <p className="text-heading text-sm font-semibold leading-tight">后台控制台</p>
+                <span className="version-chip rounded-full px-2.5 py-1 text-[0.65rem] font-semibold tracking-[0.18em]">
+                  {APP_VERSION_LABEL}
+                </span>
+              </div>
               <p className="text-xs text-[var(--muted)]">管理员：{username}</p>
             </div>
           </div>

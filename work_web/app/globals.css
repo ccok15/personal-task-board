@@ -262,6 +262,13 @@ textarea {
   color: var(--button-default-text);
 }
 
+.version-chip {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 .btn-default {
   border-color: var(--button-default-border);
   background: var(--button-default-bg);

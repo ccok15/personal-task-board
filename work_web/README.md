@@ -20,6 +20,12 @@
 - 管理员维护公开 / 私人任务与详细字段
 - GitHub + Docker Compose 的生产部署基线
 
+相关文档：
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/development-guide.md:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/simple-smoke-test.md:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/domain-routing.md:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/version-history.md:1`
+
 ## 技术栈
 - `Next.js 16` + `TypeScript`
 - `Tailwind CSS 4`
@@ -82,6 +88,29 @@ pnpm dev
 ```
 
 打开 [http://localhost:3000](http://localhost:3000)。
+
+如果你想要一个更稳定、和当前终端解耦的本地开发服务，推荐改用：
+
+```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
+pnpm local:up
+pnpm local:status
+pnpm local:down
+```
+
+这套方式固定跑在 [http://127.0.0.1:3011](http://127.0.0.1:3011)，日志文件在 `/Users/lsl/new_gpt/web_lsl/work_web/.next/local-dev-3011.log`。
+
+如果你希望它在关闭当前终端、甚至关闭 Codex 后也继续可用，推荐使用 macOS 的 `launchd` 常驻服务：
+
+```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
+pnpm local:service:install
+pnpm local:service:start
+pnpm local:service:status
+pnpm local:service:stop
+```
+
+这套方式同样固定跑在 [http://127.0.0.1:3011](http://127.0.0.1:3011)，日志文件在 `/Users/lsl/new_gpt/web_lsl/work_web/.next/launchd-local-dev.log`。
 
 ## 默认管理员账号
 - 用户名：读取 `.env` 中的 `ADMIN_USERNAME`

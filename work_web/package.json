@@ -1,10 +1,17 @@
 {
   "name": "personal-test-task-board",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "local:up": "bash scripts/local-dev-up.sh",
+    "local:down": "bash scripts/local-dev-down.sh",
+    "local:status": "bash scripts/local-dev-status.sh",
+    "local:service:install": "bash scripts/local-dev-service-install.sh",
+    "local:service:start": "bash scripts/local-dev-service-start.sh",
+    "local:service:stop": "bash scripts/local-dev-service-stop.sh",
+    "local:service:status": "bash scripts/local-dev-service-status.sh",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "eslint",

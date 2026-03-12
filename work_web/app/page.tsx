@@ -90,11 +90,7 @@ export default async function HomePage({
   return (
     <PublicShell>
       <section className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
-        <SectionHeading
-          eyebrow="Task console"
-          title="当前任务"
-          description="这里集中展示正在做、被阻塞、待处理和已搁置的任务。首页就是主工作台。"
-        />
+        <SectionHeading eyebrow="Task console" title="当前任务" />
         <Button asChild className="w-full sm:w-auto" size="lg">
           <Link href="/?create=1">
             <Plus className="size-4" />
