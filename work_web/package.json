@@ -12,6 +12,7 @@
     "local:service:start": "bash scripts/local-dev-service-start.sh",
     "local:service:stop": "bash scripts/local-dev-service-stop.sh",
     "local:service:status": "bash scripts/local-dev-service-status.sh",
+    "deploy:remote:app": "bash scripts/deploy-remote-app-only.sh",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "eslint",

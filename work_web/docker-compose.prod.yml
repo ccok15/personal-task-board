@@ -13,6 +13,7 @@ services:
       retries: 10
 
   app:
+    image: ${APP_IMAGE:-personal-task-board-app:local}
     build:
       context: .
     restart: unless-stopped

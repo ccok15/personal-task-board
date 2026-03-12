@@ -112,6 +112,33 @@ pnpm local:service:stop
 
 这套方式同样固定跑在 [http://127.0.0.1:3011](http://127.0.0.1:3011)，日志文件在 `/Users/lsl/new_gpt/web_lsl/work_web/.next/launchd-local-dev.log`。
 
+## 长期部署约定
+
+为了避免小内存 ECS 在 `Next.js build` 阶段被打满，后续默认不再让服务器本机编译。
+
+统一改成：
+
+- 本地构建 Docker 镜像
+- 通过 SSH 传到服务器
+- 服务器只替换 `app` 容器
+- 不触碰数据库容器，不跑 `seed`
+
+执行命令：
+
+```bash
+cd /Users/lsl/new_gpt/web_lsl/work_web
+pnpm deploy:remote:app
+```
+
+这个脚本会：
+
+- 本地构建镜像
+- 服务器 `git pull`
+- 服务器 `docker load`
+- 服务器只更新 `app`
+
+不会执行数据库迁移，也不会写入任何示例任务数据。
+
 ## 默认管理员账号
 - 用户名：读取 `.env` 中的 `ADMIN_USERNAME`
 - 邮箱：读取 `.env` 中的 `ADMIN_EMAIL`
