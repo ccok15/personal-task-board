@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
 import { EmptyState } from "@/components/common/empty-state";
-import { SectionHeading } from "@/components/common/section-heading";
 import { PublicShell } from "@/components/layout/public-shell";
 import { TaskManagementCard } from "@/components/task/task-management-card";
 import { TaskPriorityBadge } from "@/components/task/task-priority-badge";
@@ -42,12 +41,7 @@ export default async function TasksPage({
 
   return (
     <PublicShell>
-      <section className="space-y-6">
-        <SectionHeading
-          eyebrow="Task control"
-          title="任务管理"
-          description="这里展示全部公开任务。游客只能搜索查看，不能编辑。"
-        />
+      <section>
         <TaskFilterForm
           actionPath="/tasks"
           query={query}

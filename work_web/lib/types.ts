@@ -16,6 +16,7 @@ export type TaskRecord = {
   submitterName: string | null;
   priority: TaskPriorityValue;
   status: TaskStatusValue;
+  progress: number;
   dueDate: Date | null;
   completedAt: Date | null;
   adminNote: string | null;

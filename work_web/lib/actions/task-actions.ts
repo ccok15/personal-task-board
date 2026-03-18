@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { auth, isAdminSession, requireAdmin } from "@/lib/auth";
-import type { TaskStatusValue } from "@/lib/constants";
+import {
+  TASK_PROGRESS_MAX,
+  TASK_PROGRESS_REOPEN_VALUE,
+  TASK_PROGRESS_STEP,
+  type TaskStatusValue,
+} from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { adminTaskSchema, publicTaskSchema, toDateOrNull, toNullableString } from "@/lib/validators";
 
@@ -18,19 +23,33 @@ function revalidateTaskPaths(taskId?: string) {
   }
 }
 
+function clampTaskProgress(progress: number) {
+  if (Number.isNaN(progress)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(TASK_PROGRESS_MAX, Math.round(progress / TASK_PROGRESS_STEP) * TASK_PROGRESS_STEP));
+}
+
 function getCompletionData(
   currentStatus: TaskStatusValue,
   nextStatus: TaskStatusValue,
   currentCompletedAt: Date | null,
+  currentProgress: number,
 ) {
   if (nextStatus === "DONE") {
     return {
       completedAt: currentStatus === "DONE" ? currentCompletedAt ?? new Date() : new Date(),
+      progress: TASK_PROGRESS_MAX,
     };
   }
 
   return {
     completedAt: null,
+    progress:
+      currentStatus === "DONE" && currentProgress >= TASK_PROGRESS_MAX
+        ? TASK_PROGRESS_REOPEN_VALUE
+        : clampTaskProgress(currentProgress),
   };
 }
 
@@ -58,6 +77,7 @@ export async function createHomeTaskAction(formData: FormData) {
       priority: parsed.data.priority ?? "MEDIUM",
       dueDate: toDateOrNull(parsed.data.dueDate),
       status: "PENDING",
+      progress: 0,
       isPublic: isAdmin ? formData.get("isPublic") === "on" : true,
     },
   });
@@ -93,7 +113,7 @@ export async function createAdminTaskAction(formData: FormData) {
       dueDate: toDateOrNull(parsed.data.dueDate),
       adminNote: toNullableString(parsed.data.adminNote),
       isPublic: formData.get("isPublic") === "on",
-      ...getCompletionData("PENDING", parsed.data.status, null),
+      ...getCompletionData("PENDING", parsed.data.status, null, 0),
     },
   });
 
@@ -123,6 +143,7 @@ export async function updateTaskAction(taskId: string, formData: FormData) {
     select: {
       status: true,
       completedAt: true,
+      progress: true,
     },
   });
 
@@ -141,7 +162,12 @@ export async function updateTaskAction(taskId: string, formData: FormData) {
       dueDate: toDateOrNull(parsed.data.dueDate),
       adminNote: toNullableString(parsed.data.adminNote),
       isPublic: formData.get("isPublic") === "on",
-      ...getCompletionData(existingTask.status, parsed.data.status, existingTask.completedAt),
+      ...getCompletionData(
+        existingTask.status,
+        parsed.data.status,
+        existingTask.completedAt,
+        existingTask.progress,
+      ),
     },
   });
 
@@ -158,6 +184,7 @@ export async function updateTaskStatusAction(taskId: string, status: TaskStatusV
     select: {
       status: true,
       completedAt: true,
+      progress: true,
       isPublic: true,
     },
   });
@@ -180,11 +207,73 @@ export async function updateTaskStatusAction(taskId: string, status: TaskStatusV
     where: { id: taskId },
     data: {
       status,
-      ...getCompletionData(task.status, status, task.completedAt),
+      ...getCompletionData(task.status, status, task.completedAt, task.progress),
     },
   });
 
   revalidateTaskPaths(taskId);
+}
+
+export async function updateTaskProgressAction(
+  taskId: string,
+  operation: "increment" | "decrement" | "complete",
+) {
+  await requireAdmin();
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: {
+      status: true,
+      progress: true,
+      completedAt: true,
+    },
+  });
+
+  if (!task || task.status !== "IN_PROGRESS") {
+    return {
+      ok: false,
+      progress: null,
+      status: null,
+    };
+  }
+
+  let nextProgress = task.progress;
+  let nextStatus: TaskStatusValue = task.status;
+
+  if (operation === "decrement") {
+    nextProgress = Math.max(0, task.progress - TASK_PROGRESS_STEP);
+  } else if (operation === "increment") {
+    nextProgress = Math.min(TASK_PROGRESS_REOPEN_VALUE, task.progress + TASK_PROGRESS_STEP);
+  } else if (operation === "complete") {
+    nextProgress = TASK_PROGRESS_MAX;
+    nextStatus = "DONE";
+  }
+
+  nextProgress = clampTaskProgress(nextProgress);
+
+  if (nextProgress === task.progress && nextStatus === task.status) {
+    return {
+      ok: true,
+      progress: task.progress,
+      status: task.status,
+    };
+  }
+
+  await prisma.task.update({
+    where: { id: taskId },
+    data: {
+      status: nextStatus,
+      ...getCompletionData(task.status, nextStatus, task.completedAt, nextProgress),
+    },
+  });
+
+  revalidateTaskPaths(taskId);
+
+  return {
+    ok: true,
+    progress: nextStatus === "DONE" ? TASK_PROGRESS_MAX : nextProgress,
+    status: nextStatus,
+  };
 }
 
 export async function deleteTaskAction(taskId: string) {

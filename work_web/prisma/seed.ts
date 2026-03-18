@@ -38,6 +38,7 @@ async function main() {
           submitterName: "产品经理",
           priority: "URGENT",
           status: "IN_PROGRESS",
+          progress: 40,
           isPublic: true,
         },
         {
@@ -46,6 +47,7 @@ async function main() {
           submitterName: "产线负责人",
           priority: "HIGH",
           status: "BLOCKED",
+          progress: 30,
           isPublic: true,
         },
         {
@@ -54,6 +56,7 @@ async function main() {
           submitterName: "测试负责人",
           priority: "MEDIUM",
           status: "PENDING",
+          progress: 0,
           isPublic: true,
         },
         {
@@ -62,6 +65,7 @@ async function main() {
           submitterName: "质量负责人",
           priority: "LOW",
           status: "DONE",
+          progress: 100,
           isPublic: true,
           completedAt: new Date(),
         },

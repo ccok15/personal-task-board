@@ -25,6 +25,7 @@
 *.pem
 home-localhost-3000.png
 .playwright-cli/
+/output/
 
 # debug
 npm-debug.log*

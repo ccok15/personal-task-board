@@ -43,6 +43,7 @@ model Task {
   submitterName String?
   priority      TaskPriority @default(MEDIUM)
   status        TaskStatus   @default(PENDING)
+  progress      Int          @default(0)
   dueDate       DateTime?
   completedAt   DateTime?
   adminNote     String?

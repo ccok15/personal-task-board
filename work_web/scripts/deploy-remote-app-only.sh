@@ -10,6 +10,7 @@ REMOTE_PORT="${REMOTE_PORT:-22}"
 REMOTE_DIR="${REMOTE_DIR:-/opt/personal-task-board/work_web}"
 SSH_KEY_PATH="${SSH_KEY_PATH:-$HOME/.ssh/id_ed25519_personal_task_board_ecs_temp}"
 IMAGE_NAME="${IMAGE_NAME:-personal-task-board-app}"
+TARGET_PLATFORM="${TARGET_PLATFORM:-linux/amd64}"
 GIT_SHA="$(git -C "$GIT_ROOT" rev-parse --short HEAD)"
 IMAGE_TAG="${IMAGE_TAG:-git-$GIT_SHA}"
 FULL_IMAGE="$IMAGE_NAME:$IMAGE_TAG"
@@ -40,8 +41,16 @@ ssh_remote() {
 
 ensure_local_docker
 
+echo "Target image platform: $TARGET_PLATFORM"
+
 echo "Building local image: $FULL_IMAGE"
-docker build -t "$FULL_IMAGE" -f "$ROOT_DIR/Dockerfile" "$ROOT_DIR"
+docker buildx build --platform "$TARGET_PLATFORM" --load -t "$FULL_IMAGE" -f "$ROOT_DIR/Dockerfile" "$ROOT_DIR"
+
+LOCAL_IMAGE_PLATFORM="$(docker image inspect --format '{{.Os}}/{{.Architecture}}' "$FULL_IMAGE")"
+if [[ "$LOCAL_IMAGE_PLATFORM" != "$TARGET_PLATFORM" ]]; then
+  echo "Built image platform mismatch: expected $TARGET_PLATFORM, got $LOCAL_IMAGE_PLATFORM" >&2
+  exit 1
+fi
 
 echo "Syncing repository on server..."
 ssh_remote "cd '$REMOTE_DIR' && git fetch origin main && git pull --ff-only origin main"

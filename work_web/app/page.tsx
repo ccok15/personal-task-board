@@ -1,15 +1,13 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { Notice } from "@/components/common/notice";
-import { SectionHeading } from "@/components/common/section-heading";
 import { PublicShell } from "@/components/layout/public-shell";
-import { HomeTaskForm } from "@/components/task/home-task-form";
+import { HomeTaskFab } from "@/components/task/home-task-fab";
+import { InProgressSpotlight } from "@/components/task/in-progress-spotlight";
 import { TaskListItem } from "@/components/task/task-list-item";
 import { TaskStatusActions } from "@/components/task/task-status-actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { auth, isAdminSession } from "@/lib/auth";
 import { OPEN_TASK_STATUS_ORDER, taskStatusMeta, type TaskStatusValue } from "@/lib/constants";
 import { getVisibleOpenTasks } from "@/lib/data";
@@ -66,7 +64,7 @@ function buildHomeHref({
   }
 
   const query = params.toString();
-  return query ? `/?${query}` : "/";
+      return query ? `/?${query}` : "/";
 }
 
 export default async function HomePage({
@@ -82,6 +80,10 @@ export default async function HomePage({
 
   const session = await auth();
   const isAdmin = isAdminSession(session);
+  const inProgressTasks = await getVisibleOpenTasks({
+    includePrivate: isAdmin,
+    status: "IN_PROGRESS",
+  });
   const tasks = await getVisibleOpenTasks({
     includePrivate: isAdmin,
     status: statusFilter,
@@ -89,14 +91,8 @@ export default async function HomePage({
 
   return (
     <PublicShell>
-      <section className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
-        <SectionHeading eyebrow="Task console" title="当前任务" />
-        <Button asChild className="w-full sm:w-auto" size="lg">
-          <Link href="/?create=1">
-            <Plus className="size-4" />
-            新建任务
-          </Link>
-        </Button>
+      <section>
+        <InProgressSpotlight isAdmin={isAdmin} tasks={inProgressTasks} />
       </section>
 
       {created ? (
@@ -108,14 +104,6 @@ export default async function HomePage({
           description="请检查标题是否已填写，或确认日期格式是否正确。"
           variant="error"
         />
-      ) : null}
-
-      {create ? (
-        <Card>
-          <CardContent className="p-6 md:p-7">
-            <HomeTaskForm isAdmin={isAdmin} />
-          </CardContent>
-        </Card>
       ) : null}
 
       <section className="tech-panel rounded-2xl p-4">
@@ -173,6 +161,8 @@ export default async function HomePage({
           }
         />
       )}
+
+      <HomeTaskFab initialOpen={create === "1"} isAdmin={isAdmin} />
     </PublicShell>
   );
 }

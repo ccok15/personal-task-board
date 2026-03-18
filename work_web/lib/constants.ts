@@ -9,6 +9,9 @@ export const TASK_STATUS_VALUES = [
   "PAUSED",
 ] as const;
 export const TASK_PRIORITY_VALUES = ["URGENT", "HIGH", "MEDIUM", "LOW"] as const;
+export const TASK_PROGRESS_STEP = 10;
+export const TASK_PROGRESS_MAX = 100;
+export const TASK_PROGRESS_REOPEN_VALUE = 90;
 
 export type UserRoleValue = (typeof USER_ROLE_VALUES)[number];
 export type TaskStatusValue = (typeof TASK_STATUS_VALUES)[number];
