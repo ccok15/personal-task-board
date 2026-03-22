@@ -17,6 +17,7 @@ type TaskFilters = {
   openOnly?: boolean;
   completedOnly?: boolean;
   queryMode?: "all" | "title";
+  completedOrder?: "desc" | "asc";
 };
 
 function buildTaskWhere({
@@ -73,16 +74,22 @@ function sortOpenTasks<T extends { priority: TaskPriorityValue; createdAt: Date 
   });
 }
 
-function sortCompletedTasks<T extends { completedAt: Date | null; updatedAt: Date }>(tasks: T[]) {
+function sortCompletedTasksByOrder<T extends { completedAt: Date | null; updatedAt: Date }>(
+  tasks: T[],
+  order: "desc" | "asc",
+) {
   return [...tasks].sort((left, right) => {
     const leftTime = left.completedAt?.getTime() ?? left.updatedAt.getTime();
     const rightTime = right.completedAt?.getTime() ?? right.updatedAt.getTime();
-    return rightTime - leftTime;
+    return order === "asc" ? leftTime - rightTime : rightTime - leftTime;
   });
 }
 
-function sortAdminTasks<T extends { status: TaskStatusValue; priority: TaskPriorityValue; updatedAt: Date }>(
+function sortAdminTasks<
+  T extends { status: TaskStatusValue; priority: TaskPriorityValue; updatedAt: Date; completedAt: Date | null },
+>(
   tasks: T[],
+  completedOrder: "desc" | "asc",
 ) {
   return [...tasks].sort((left, right) => {
     const leftOpen = left.status !== "DONE";
@@ -95,6 +102,12 @@ function sortAdminTasks<T extends { status: TaskStatusValue; priority: TaskPrior
     const statusDiff = getStatusRank(left.status) - getStatusRank(right.status);
     if (statusDiff !== 0) {
       return statusDiff;
+    }
+
+    if (!leftOpen && !rightOpen) {
+      const leftTime = left.completedAt?.getTime() ?? left.updatedAt.getTime();
+      const rightTime = right.completedAt?.getTime() ?? right.updatedAt.getTime();
+      return completedOrder === "asc" ? leftTime - rightTime : rightTime - leftTime;
     }
 
     const priorityDiff = getPriorityRank(left.priority) - getPriorityRank(right.priority);
@@ -126,26 +139,34 @@ export async function getVisibleOpenTasks({
 
 export async function getVisibleTasks({
   query,
+  completedOrder = "desc",
 }: {
   query?: string;
+  completedOrder?: "desc" | "asc";
 }) {
-  return prisma.task.findMany({
+  const tasks = await prisma.task.findMany({
     where: buildTaskWhere({
       includePrivate: false,
       query,
     }),
-    orderBy: [{ priority: "asc" }, { createdAt: "asc" }],
   });
+
+  const openTasks = tasks.filter((task) => task.status !== "DONE");
+  const completedTasks = tasks.filter((task) => task.status === "DONE");
+
+  return [...sortOpenTasks(openTasks), ...sortCompletedTasksByOrder(completedTasks, completedOrder)];
 }
 
 export async function getVisibleCompletedTasks({
   includePrivate,
   priority,
   query,
+  completedOrder = "desc",
 }: {
   includePrivate: boolean;
   priority?: TaskPriorityValue | "ALL";
   query?: string;
+  completedOrder?: "desc" | "asc";
 }) {
   const tasks = await prisma.task.findMany({
     where: buildTaskWhere({
@@ -157,7 +178,7 @@ export async function getVisibleCompletedTasks({
     }),
   });
 
-  return sortCompletedTasks(tasks);
+  return sortCompletedTasksByOrder(tasks, completedOrder);
 }
 
 export async function getAdminTasks(filters: Omit<TaskFilters, "includePrivate" | "openOnly" | "completedOnly">) {
@@ -168,7 +189,7 @@ export async function getAdminTasks(filters: Omit<TaskFilters, "includePrivate" 
     }),
   });
 
-  return sortAdminTasks(tasks);
+  return sortAdminTasks(tasks, filters.completedOrder ?? "desc");
 }
 
 export async function getTaskById(id: string) {

@@ -29,7 +29,7 @@ fi
 
 cd "$ROOT_DIR"
 : >"$LOG_FILE"
-nohup script -q /dev/null zsh -lc "cd '$ROOT_DIR' && pnpm exec next dev --hostname '$HOST' --port '$PORT' >> '$LOG_FILE' 2>&1" >/dev/null 2>&1 < /dev/null &
+nohup script -q /dev/null zsh -lc "cd '$ROOT_DIR' && pnpm exec next dev --webpack --hostname '$HOST' --port '$PORT' >> '$LOG_FILE' 2>&1" >/dev/null 2>&1 < /dev/null &
 SERVER_PID=$!
 echo "$SERVER_PID" >"$PID_FILE"
 

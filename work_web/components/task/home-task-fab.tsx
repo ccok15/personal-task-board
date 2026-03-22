@@ -39,7 +39,7 @@ export function HomeTaskFab({ isAdmin, initialOpen = false }: HomeTaskFabProps) 
         aria-expanded={open}
         aria-haspopup="dialog"
         aria-label="新建任务"
-        className="fixed right-4 bottom-5 z-40 inline-flex size-15 items-center justify-center rounded-full border border-[var(--button-default-border-hover)] bg-[var(--button-default-bg-hover)] text-[var(--button-default-text)] shadow-[0_18px_40px_rgba(2,132,199,0.22)] backdrop-blur transition-transform hover:scale-[1.03] md:right-8 md:bottom-8"
+        className="fixed right-4 bottom-24 z-40 inline-flex size-15 items-center justify-center rounded-full border border-[var(--button-default-border-hover)] bg-[var(--button-default-bg-hover)] text-[var(--button-default-text)] shadow-[0_18px_40px_rgba(2,132,199,0.22)] backdrop-blur transition-transform hover:scale-[1.03] md:right-8 md:bottom-10"
         onClick={() => setOpen(true)}
         type="button"
       >

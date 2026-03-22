@@ -12,9 +12,11 @@ type TaskFilterFormProps = {
   status?: string;
   priority?: string;
   query?: string;
+  completedOrder?: "desc" | "asc";
   showStatus?: boolean;
   showPriority?: boolean;
   showQuery?: boolean;
+  showCompletedOrder?: boolean;
   queryLabel?: string;
   queryPlaceholder?: string;
 };
@@ -24,15 +26,17 @@ export function TaskFilterForm({
   status = "ALL",
   priority = "ALL",
   query = "",
+  completedOrder = "desc",
   showStatus = true,
   showPriority = true,
   showQuery = false,
+  showCompletedOrder = false,
   queryLabel = "关键词",
   queryPlaceholder = "标题 / 描述 / 提交人",
 }: TaskFilterFormProps) {
   return (
     <form action={actionPath} className="tech-panel rounded-2xl p-4">
-      <div className="grid gap-4 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
+      <div className="grid gap-4 lg:grid-cols-[repeat(5,minmax(0,1fr))_auto]">
         {showStatus ? (
           <div className="space-y-2">
             <label className="kicker">状态筛选</label>
@@ -64,6 +68,19 @@ export function TaskFilterForm({
                   {meta.label}
                 </option>
               ))}
+            </select>
+          </div>
+        ) : null}
+        {showCompletedOrder ? (
+          <div className="space-y-2">
+            <label className="kicker">完成时间</label>
+            <select
+              className="input-surface h-11 w-full rounded-md px-3 text-sm outline-none"
+              defaultValue={completedOrder}
+              name="completedOrder"
+            >
+              <option value="desc">降序</option>
+              <option value="asc">升序</option>
             </select>
           </div>
         ) : null}

@@ -39,10 +39,12 @@ export default async function AdminTasksPage({
   const status = (firstValue(params.status) ?? "ALL") as TaskStatusValue | "ALL";
   const priority = (firstValue(params.priority) ?? "ALL") as TaskPriorityValue | "ALL";
   const query = firstValue(params.q) ?? "";
+  const completedOrder = firstValue(params.completedOrder) === "asc" ? "asc" : "desc";
   const deleted = firstValue(params.deleted);
   const error = firstValue(params.error);
 
   const tasks = await getAdminTasks({
+    completedOrder,
     status,
     priority,
     query,
@@ -63,8 +65,10 @@ export default async function AdminTasksPage({
 
       <TaskFilterForm
         actionPath="/admin/tasks"
+        completedOrder={completedOrder}
         priority={priority}
         query={query}
+        showCompletedOrder={status === "DONE"}
         showQuery
         status={status}
       />

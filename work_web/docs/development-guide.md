@@ -10,6 +10,10 @@
 
 - `/Users/lsl/new_gpt/web_lsl/work_web/docs/version-history.md:1`
 
+服务器发布必看手册在：
+
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/server-release-playbook.md:1`
+
 ## 1. 项目根目录
 
 项目真实根目录：
@@ -21,6 +25,10 @@
 以后所有本地开发、构建、调试、部署脚本，都以这个目录为准。
 
 ## 1.1 当前部署原则
+
+每次准备发布服务器前，都先看：
+
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/server-release-playbook.md:1`
 
 当前生产环境默认采用：
 
@@ -89,6 +97,7 @@
 - `submitterName`
 - `priority`
 - `status`
+- `progress`
 - `dueDate`
 - `completedAt`
 - `adminNote`
@@ -109,6 +118,45 @@
 - `BLOCKED`：阻塞
 - `DONE`：已完成
 - `PAUSED`：搁置
+
+### 4.1 `Task.progress` 与进行中进度条
+
+当前任务模型里，`progress` 是真实持久化字段：
+
+- 范围固定为 `0 ~ 100`
+- 以 `10` 为一个步长
+- 会写进数据库，不是前端临时状态
+
+当前规则：
+
+- 只有 `IN_PROGRESS` 会在首页顶部“进行中任务摘要栏”里显示进度条
+- `PENDING / BLOCKED / PAUSED` 不显示进度条，但会保留已有进度
+- `DONE` 的进度应为 `100`
+
+如果任务状态在这些未完成状态之间切换：
+
+- `PENDING`
+- `IN_PROGRESS`
+- `BLOCKED`
+- `PAUSED`
+
+进度值不会丢。
+
+如果任务进入 `DONE`：
+
+- 进度应被补成 `100`
+- `completedAt` 应有值
+
+如果一个 `DONE` 任务重新回到未完成状态：
+
+- 当前默认会回退到可继续推进的进度值，而不是保留 `100`
+
+相关文件：
+
+- 首页摘要栏：`/Users/lsl/new_gpt/web_lsl/work_web/components/task/in-progress-spotlight.tsx`
+- 进行中进度条卡片：`/Users/lsl/new_gpt/web_lsl/work_web/components/task/in-progress-progress-card.tsx`
+- 进度交互写库：`/Users/lsl/new_gpt/web_lsl/work_web/lib/actions/task-actions.ts`
+- 常量定义：`/Users/lsl/new_gpt/web_lsl/work_web/lib/constants.ts`
 
 权限规则：
 
@@ -147,9 +195,31 @@
 - 后台新建任务
 - 后台编辑任务
 - 快速修改任务状态
+- 进行中摘要栏里的进度推进
 - 删除任务
 
 如果改动涉及“提交后怎么写库”“改状态后怎么刷新页面”“权限限制”，先看这个文件。
+
+### 6.1 进行中进度条交互规则
+
+当前“进行中任务摘要栏”的进度交互只允许管理员使用。
+
+交互规则：
+
+- 点左半边：`-10%`
+- 点右半边：`+10%`
+- 长按右半边 `800ms`：直接完成到 `100%`
+
+边界规则：
+
+- `0%` 时点左边无效
+- 任意进度都可以通过长按右边直接完成
+- 到 `100%` 后，任务会自动进入 `DONE`
+
+展示规则：
+
+- 摘要栏是操作入口
+- 下方完整任务卡只是正常展示和状态流转，不承担进度点击逻辑
 
 ## 7. 首页相关文件
 

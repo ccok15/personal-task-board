@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "local:up": "bash scripts/local-dev-up.sh",
     "local:down": "bash scripts/local-dev-down.sh",
     "local:status": "bash scripts/local-dev-status.sh",
@@ -13,6 +13,7 @@
     "local:service:stop": "bash scripts/local-dev-service-stop.sh",
     "local:service:status": "bash scripts/local-dev-service-status.sh",
     "deploy:remote:app": "bash scripts/deploy-remote-app-only.sh",
+    "release:server": "bash scripts/deploy-remote-app-only.sh",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "eslint",

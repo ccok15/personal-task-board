@@ -27,6 +27,7 @@ export default async function TasksPage({
 }) {
   const params = (await searchParams) ?? {};
   const query = firstValue(params.q) ?? "";
+  const completedOrder = firstValue(params.completedOrder) === "asc" ? "asc" : "desc";
 
   const session = await auth();
   const isAdmin = isAdminSession(session);
@@ -37,6 +38,7 @@ export default async function TasksPage({
 
   const tasks = await getVisibleTasks({
     query,
+    completedOrder,
   });
 
   return (
@@ -44,9 +46,11 @@ export default async function TasksPage({
       <section>
         <TaskFilterForm
           actionPath="/tasks"
+          completedOrder={completedOrder}
           query={query}
           queryLabel="标题搜索"
           queryPlaceholder="输入任务标题"
+          showCompletedOrder
           showQuery
           showPriority={false}
           showStatus={false}

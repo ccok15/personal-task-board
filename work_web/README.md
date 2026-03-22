@@ -22,6 +22,7 @@
 
 相关文档：
 - `/Users/lsl/new_gpt/web_lsl/work_web/docs/development-guide.md:1`
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/server-release-playbook.md:1`
 - `/Users/lsl/new_gpt/web_lsl/work_web/docs/simple-smoke-test.md:1`
 - `/Users/lsl/new_gpt/web_lsl/work_web/docs/domain-routing.md:1`
 - `/Users/lsl/new_gpt/web_lsl/work_web/docs/version-history.md:1`
@@ -113,6 +114,10 @@ pnpm local:service:stop
 这套方式同样固定跑在 [http://127.0.0.1:3011](http://127.0.0.1:3011)，日志文件在 `/Users/lsl/new_gpt/web_lsl/work_web/.next/launchd-local-dev.log`。
 
 ## 长期部署约定
+
+每次准备把代码发布到阿里云服务器前，先看：
+
+- `/Users/lsl/new_gpt/web_lsl/work_web/docs/server-release-playbook.md:1`
 
 为了避免小内存 ECS 在 `Next.js build` 阶段被打满，后续默认不再让服务器本机编译。
 

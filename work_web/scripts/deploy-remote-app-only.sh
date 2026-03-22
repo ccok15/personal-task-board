@@ -14,6 +14,22 @@ TARGET_PLATFORM="${TARGET_PLATFORM:-linux/amd64}"
 GIT_SHA="$(git -C "$GIT_ROOT" rev-parse --short HEAD)"
 IMAGE_TAG="${IMAGE_TAG:-git-$GIT_SHA}"
 FULL_IMAGE="$IMAGE_NAME:$IMAGE_TAG"
+TMP_TAR="${TMP_TAR:-/tmp/${IMAGE_NAME}-${IMAGE_TAG}.tar.gz}"
+
+cleanup() {
+  rm -f "$TMP_TAR"
+}
+
+trap cleanup EXIT
+
+log_step() {
+  printf '\n==> %s\n' "$1"
+}
+
+fail() {
+  printf '\n[deploy:remote:app] %s\n' "$1" >&2
+  exit 1
+}
 
 ensure_local_docker() {
   if docker info >/dev/null 2>&1; then
@@ -32,6 +48,15 @@ ensure_local_docker() {
   exit 1
 }
 
+ensure_local_checks() {
+  log_step "Running local checks"
+  (
+    cd "$ROOT_DIR"
+    pnpm lint
+    pnpm build
+  )
+}
+
 ssh_remote() {
   ssh -i "$SSH_KEY_PATH" -p "$REMOTE_PORT" \
     -o BatchMode=yes \
@@ -39,39 +64,82 @@ ssh_remote() {
     "$REMOTE_USER@$REMOTE_HOST" "$@"
 }
 
+scp_remote() {
+  scp -i "$SSH_KEY_PATH" -P "$REMOTE_PORT" \
+    -o BatchMode=yes \
+    -o ConnectTimeout=15 \
+    "$@"
+}
+
+show_remote_state() {
+  log_step "Current remote state"
+  ssh_remote "
+    set -e
+    cd '$REMOTE_DIR'
+    printf 'remote git: '
+    git rev-parse --short HEAD || true
+    printf 'remote env image: '
+    grep '^APP_IMAGE=' .env.production || echo 'APP_IMAGE not set'
+    docker compose --env-file .env.production -f docker-compose.prod.yml -f docker-compose.ecs.yml -f docker-compose.external-proxy.yml ps
+  "
+}
+
+verify_remote_app() {
+  log_step "Verifying remote app"
+  ssh_remote "
+    set -e
+    cd '$REMOTE_DIR'
+    APP_DOMAIN=\$(grep '^APP_DOMAIN=' .env.production | cut -d= -f2- || true)
+    curl -fsS http://127.0.0.1:3000/ >/dev/null
+    if [ -n \"\$APP_DOMAIN\" ]; then
+      curl -kfsSI \"https://\$APP_DOMAIN/login\" >/dev/null
+    fi
+    printf 'health check passed for image: %s\n' '$FULL_IMAGE'
+  " || fail "Remote app health check failed."
+}
+
 ensure_local_docker
+ensure_local_checks
+show_remote_state
 
-echo "Target image platform: $TARGET_PLATFORM"
+log_step "Build info"
+echo "git sha: $GIT_SHA"
+echo "target image platform: $TARGET_PLATFORM"
+echo "image tag: $FULL_IMAGE"
 
-echo "Building local image: $FULL_IMAGE"
+log_step "Building local image"
 docker buildx build --platform "$TARGET_PLATFORM" --load -t "$FULL_IMAGE" -f "$ROOT_DIR/Dockerfile" "$ROOT_DIR"
 
 LOCAL_IMAGE_PLATFORM="$(docker image inspect --format '{{.Os}}/{{.Architecture}}' "$FULL_IMAGE")"
 if [[ "$LOCAL_IMAGE_PLATFORM" != "$TARGET_PLATFORM" ]]; then
-  echo "Built image platform mismatch: expected $TARGET_PLATFORM, got $LOCAL_IMAGE_PLATFORM" >&2
-  exit 1
+  fail "Built image platform mismatch: expected $TARGET_PLATFORM, got $LOCAL_IMAGE_PLATFORM"
 fi
 
-echo "Syncing repository on server..."
+log_step "Syncing repository on server"
 ssh_remote "cd '$REMOTE_DIR' && git fetch origin main && git pull --ff-only origin main"
 
-echo "Streaming image to server..."
-docker save "$FULL_IMAGE" | gzip | ssh -i "$SSH_KEY_PATH" -p "$REMOTE_PORT" \
-  -o BatchMode=yes \
-  -o ConnectTimeout=15 \
-  "$REMOTE_USER@$REMOTE_HOST" "gunzip | docker load"
+log_step "Packaging image"
+docker save "$FULL_IMAGE" | gzip > "$TMP_TAR"
 
-echo "Updating server app only (database untouched)..."
+log_step "Uploading image archive to server"
+scp_remote "$TMP_TAR" "$REMOTE_USER@$REMOTE_HOST:/tmp/${IMAGE_NAME}-${IMAGE_TAG}.tar.gz"
+
+log_step "Loading image and updating remote app only"
 ssh_remote "
   set -e
   cd '$REMOTE_DIR'
+  gunzip -c '/tmp/${IMAGE_NAME}-${IMAGE_TAG}.tar.gz' | docker load
+  rm -f '/tmp/${IMAGE_NAME}-${IMAGE_TAG}.tar.gz'
   if grep -q '^APP_IMAGE=' .env.production; then
     sed -i 's#^APP_IMAGE=.*#APP_IMAGE=$FULL_IMAGE#' .env.production
   else
     printf '\nAPP_IMAGE=%s\n' '$FULL_IMAGE' >> .env.production
   fi
-  docker compose --env-file .env.production -f docker-compose.prod.yml -f docker-compose.ecs.yml -f docker-compose.external-proxy.yml up -d --no-deps --no-build app
+  docker compose --env-file .env.production -f docker-compose.prod.yml -f docker-compose.ecs.yml -f docker-compose.external-proxy.yml up -d --force-recreate --no-deps --no-build app
   docker compose --env-file .env.production -f docker-compose.prod.yml -f docker-compose.ecs.yml -f docker-compose.external-proxy.yml ps
 "
 
-echo "Remote deploy completed with image: $FULL_IMAGE"
+verify_remote_app
+
+log_step "Remote deploy completed"
+echo "remote deploy completed with image: $FULL_IMAGE"
